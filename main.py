@@ -20,7 +20,7 @@ clock = pygame.time.Clock()
 class Tile(pygame.sprite.Sprite):
     def __init__(self, filename, x, y):
         super().__init__()
-        self.nome = filename  # Definir nome para referência
+        self.nome = filename 
         self.original_image = pygame.image.load(os.path.join('imagens/figs', filename))
         self.back_image = self.original_image.copy()
         pygame.draw.rect(self.back_image, WHITE, self.back_image.get_rect())
@@ -30,7 +30,7 @@ class Tile(pygame.sprite.Sprite):
         self.shown = False
 
     def esconder(self):
-        self.image = self.back_image  # Esconder a peça corretamente
+        self.image = self.back_image  
         self.shown = False
 
 
@@ -50,7 +50,7 @@ class Game:
         self.frame_count = 0
         self.block_game = False
         self.game_over = False
-        self.timer = 60  # Tempo do jogo
+        self.timer = 60 
 
         self.generate_level(self.level)
 
@@ -114,7 +114,7 @@ class Game:
         left_margin = (self.width - (self.img_width * self.cols + self.padding * (self.cols - 1))) // 2
         for i, fig in enumerate(figs):
             x = left_margin + (self.img_width + self.padding) * (i % self.cols)
-            y = self.margin_top + (i // self.cols * (self.img_height + self.padding))
+            y = self.margin_top + (i // self.cols) * (self.img_height + self.padding)
             self.tiles_group.add(Tile(fig, x, y))
 
     def select_random_figs(self, level):
@@ -134,9 +134,16 @@ class Game:
                     self.is_video_playing = not self.is_video_playing
                     self.video_toggle = self.play if self.is_video_playing else self.stop
 
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.level_complete:
-                self.level = 1 if self.level >= 6 else self.level + 1
-                self.generate_level(self.level)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                if self.level_complete:
+                    if self.level < 6:
+                        self.level += 1
+                        self.generate_level(self.level)
+                    else:
+                        self.game_over = True
+                        self.level_complete = False
+                else:
+                    self.generate_level(self.level)
 
     def draw(self):
         screen.fill(BLACK)
@@ -152,14 +159,36 @@ class Game:
 
         self.tiles_group.draw(screen)
 
+        # Mensagens de fase concluída, vitória e derrota
+        if self.level_complete and not self.game_over:
+            self.display_message("Fase concluída! Aperte espaço para a próxima fase")
+        elif self.game_over:
+            if self.level == 6:
+                self.display_message("Parabéns, você venceu! Aperte espaço para iniciar novamente")
+            else:
+                self.display_message("Eita, você perdeu :( Aperte espaço para iniciar novamente")
+
+    def display_message(self, message):
+        message_text = self.content_font.render(message, True, WHITE)
+        screen.blit(message_text, (WINDOW_WIDTH // 2 - message_text.get_width() // 2, WINDOW_HEIGHT - 100))
+
     def get_video(self):
         self.cap = cv2.VideoCapture('video/nuvem.mp4')
-        self.success, self.img = self.cap.read()
-        if self.success:
-            self.shape = self.img.shape[1::-1]
+        if not self.cap.isOpened():
+            print("Erro ao abrir o vídeo.")
+            self.is_video_playing = False  
+        else:
+            self.success, self.img = self.cap.read()
+            if self.success:
+                self.shape = self.img.shape[1::-1]
 
 
 game = Game()
+
+if not os.path.exists('imagens/figs'):
+    print("Pasta 'imagens/figs' não encontrada.")
+if not os.path.exists('video/nuvem.mp4'):
+    print("Vídeo 'nuvem.mp4' não encontrado.")
 
 running = True
 while running:
