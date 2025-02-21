@@ -1,6 +1,7 @@
 import pygame
 import cv2
 import sys
+import os
 
 # Inicializa o pygame
 pygame.init()
@@ -10,9 +11,20 @@ LARGURA, ALTURA = 800, 600
 TELA = pygame.display.set_mode((LARGURA, ALTURA))
 pygame.display.set_caption("Jogo da Memória")
 
+# Verifica se o arquivo de vídeo existe
+VIDEO_PATH = "nuvem.mp4"
+if not os.path.exists(VIDEO_PATH):
+    print(f"Erro: Arquivo {VIDEO_PATH} não encontrado!")
+    sys.exit()
+
 # Carregar vídeo de fundo
-video = cv2.VideoCapture("nuvem.mp4")
+video = cv2.VideoCapture(VIDEO_PATH)
 sucesso, frame = video.read()
+if not sucesso:
+    print("Erro: Não foi possível carregar o vídeo.")
+    sys.exit()
+
+# Converte frame inicial para pygame
 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 frame = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
 
@@ -40,7 +52,7 @@ while rodando:
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
     else:
-        video.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Recomeça o vídeo se acabar
+        video.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reinicia o vídeo se acabar
 
     # Atualiza o tempo
     tempo_atual = pygame.time.get_ticks()
