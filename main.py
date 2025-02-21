@@ -19,3 +19,12 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(x, y))
         self.shown = False
 
+        def update(self):
+        self.image = self.original_image if self.shown else self.back_image
+
+    def mostrar(self):
+        self.shown = True
+
+    def esconder(self):
+        self.shown = False
+
