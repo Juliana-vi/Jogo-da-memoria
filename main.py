@@ -199,17 +199,6 @@ class Game():
             next_rect = next_text.get_rect(midbottom=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 40))
             screen.blit(next_text, next_rect)
 
-        screen.blit(title_text, title_rect)
-        screen.blit(level_text, level_rect)
-        screen.blit(info_text, info_rect)
-        screen.blit(timer_text, timer_rect)
-        pygame.draw.rect(screen, BLACK, (WINDOW_WIDTH - 110, 0, 130, 70))
-        screen.blit(self.video_toggle, self.video_toggle_rect)
-        screen.blit(self.music_toggle, self.music_toggle_rect)
-
-        self.tiles_group.draw(screen)
-        self.tiles_group.update()
-
     def check_loss(self):
         if self.timer <= 0 or self.some_loss_condition:
             self.game_over = True
@@ -234,6 +223,17 @@ class Game():
     def start_level(self):
         self.timer = 60
 
+        screen.blit(title_text, title_rect)
+        screen.blit(level_text, level_rect)
+        screen.blit(info_text, info_rect)
+        screen.blit(timer_text, timer_rect)
+        pygame.draw.rect(screen, BLACK, (WINDOW_WIDTH - 110, 0, 130, 70))
+        screen.blit(self.video_toggle, self.video_toggle_rect)
+        screen.blit(self.music_toggle, self.music_toggle_rect)
+
+        self.tiles_group.draw(screen)
+        self.tiles_group.update()
+    
     def get_video(self):
         self.cap = cv2.VideoCapture('video/nuvem.mp4')
         self.success, self.img = self.cap.read()
