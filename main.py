@@ -66,7 +66,7 @@ class Tile(pygame.sprite.Sprite):
         self.music_toggle_rect = self.music_toggle.get_rect(topright=(WINDOW_WIDTH - -1, 10))
 
         # carregando a música
-        pygame.mixer.music.load('sounds/picnic.mp3')
+        pygame.mixer.music.load('som/picnic.mp3')
         pygame.mixer.music.set_volume(.3)
         pygame.mixer.music.play()
 
