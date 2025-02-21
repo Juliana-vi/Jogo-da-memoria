@@ -129,6 +129,13 @@ class Tile(pygame.sprite.Sprite):
             tile = Tile(figs[i], x, y)
             self.tiles_group.add(tile)
 
+    def select_random_figs(self, level):
+        figs = random.sample(self.all_figs, (self.level + self.level + 2))
+        figs_copy = figs.copy()
+        figs.extend(figs_copy)
+        random.shuffle(figs)
+        return figs
+
 
 
 
