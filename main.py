@@ -20,11 +20,6 @@ class Tile(pygame.sprite.Sprite):
     def __init__(self, filename, x, y):
         super().__init__()
 
-        self.nome = filename.split('.')[0]
-
-        self.original_image = pygame.image.load('imagens/figs/'+ filename)
-
-        self.back_image = pygame.image.load('imagens/figs/'+ filename)
         self.original_image = pygame.image.load(os.path.join('imagens/figs', filename))
         self.back_image = self.original_image.copy()
         pygame.draw.rect(self.back_image, WHITE, self.back_image.get_rect())
@@ -32,19 +27,14 @@ class Tile(pygame.sprite.Sprite):
         self.image = self.back_image
         self.rect = self.image.get_rect(topleft=(x, y))
         self.shown = False
-@@ -28,55 +36,32 @@
+
     def esconder(self):
         self.shown = False
 
-class Game():
 class Game:
     def __init__(self):
         self.level = 1
         self.level_complete = False
-
-        self.all_figs = [f for f in os.listdir('imagens/figs') if os.path.join('imagens/figs', f)]
-
-        self.img_width, self.img_height = (128, 128)
         self.all_figs = [f for f in os.listdir('imagens/figs') if f.endswith(('.png', '.jpg'))]
         self.img_width, self.img_height = 128, 128
         self.padding = 20
@@ -52,14 +42,11 @@ class Game:
         self.cols = 4
         self.rows = 2
         self.width = 1280
-
         self.width = WINDOW_WIDTH
         self.tiles_group = pygame.sprite.Group()
-
         self.flipped = []
         self.frame_count = 0
         self.block_game = False
-
         self.generate_level(self.level)
 
         # iniciando o vídeo
@@ -81,8 +68,6 @@ class Game:
         pygame.mixer.music.load('som/picnic.mp3')
         pygame.mixer.music.set_volume(.3)
         pygame.mixer.music.play()
-        pygame.mixer.music.set_volume(0.3)
-        pygame.mixer.music.play(-1)
 
     def update(self, event_list):
         if self.is_video_playing:
@@ -91,59 +76,35 @@ class Game:
         self.user_input(event_list)
         self.draw()
         self.check_level_complete(event_list)
-        self.tiles_group.update()
-        self.draw()
 
     def check_level_complete(self, event_list):
         if not self.block_game:
-@@ -90,200 +75,70 @@
-                                if self.flipped[0] != self.flipped[1]:
-                                    self.block_game = True
-                                else:
-                                    self.flipped = []
-                                    for tile in self.tiles_group:
-                                        if tile.shown:
-                                            self.level_complete = True
-                                        else:
-                                            self.level_complete = False
-                                            break
-                                    self.flipped.clear()
-                                    self.level_complete = all(tile.shown for tile in self.tiles_group)
+
+            if self.flipped[0] != self.flipped[1]:
+                self.block_game = True
+            else:
+                self.flipped.clear()
+                self.level_complete = all(tile.shown for tile in self.tiles_group)
         else:
             self.frame_count += 1
             if self.frame_count == FPS:
-                self.frame_count = 0
-                self.block_game = False
+               self.frame_count = 0
+               self.block_game = False
 
-                for tile in self.tiles_group:
+           for tile in self.tiles_group:
                     if tile.nome in self.flipped:
                         tile.esconder()
-                self.flipped = []
-                self.flipped.clear()
-
+            self.flipped.clear()
+           
     def generate_level(self, level):
-        self.figs = self.select_random_figs(self.level)
         self.figs = self.select_random_figs(level)
         self.level_complete = False
-        self.rows = self.level + 1
-        self.cols = 4
         self.rows = level + 1
         self.cols = max(4, self.rows)
         self.generate_tileset(self.figs)
 
     def generate_tileset(self, figs):
-        self.cols = self.rows = self.cols if self.cols >= self.rows else self.rows
-
-        TILES_WIDTH = (self.img_width * self.cols + self.padding * 3)
-        LEFT_MARING = RIGHT_MARGIN = (self.width - TILES_WIDTH) // 2
-        # tiles = []
         self.tiles_group.empty()
-
-        for i in range(len(figs)):
-            x = LEFT_MARING + ((self.img_width + self.padding) * (i % self.cols))
-            y = self.margin_top + (i // self.rows * (self.img_height + self.padding))
-            tile = Tile(figs[i], x, y)
-            self.tiles_group.add(tile)
         left_margin = (self.width - (self.img_width * self.cols + self.padding * (self.cols - 1))) // 2
         for i, fig in enumerate(figs):
             x = left_margin + (self.img_width + self.padding) * (i % self.cols)
@@ -151,18 +112,15 @@ class Game:
             self.tiles_group.add(Tile(fig, x, y))
 
     def select_random_figs(self, level):
-        figs = random.sample(self.all_figs, (self.level + self.level + 2))
-        figs_copy = figs.copy()
-        figs.extend(figs_copy)
-        figs = random.sample(self.all_figs, level * 2)
-        figs *= 2
-        random.shuffle(figs)
-        return figs
+         figs = random.sample(self.all_figs, level * 2)
+         figs *= 2
+         random.shuffle(figs)
+         return figs
     
 
     def user_input(self, event_list):
         for event in event_list:
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.music_toggle_rect.collidepoint(pygame.mouse.get_pos()):
                     if self.is_music_playing:
                         self.is_music_playing = False
@@ -185,10 +143,9 @@ class Game:
                     self.level += 1
                     if self.level >= 6:
                         self.level = 1
-                    self.level = 1 if self.level > 5 else self.level + 1
                     self.generate_level(self.level)
 
-    def draw(self):
+        def draw(self):
         screen.fill(BLACK)
 
         title_font = pygame.font.Font('fonte/font.ttf', 44)
@@ -255,10 +212,6 @@ class Game:
         pygame.draw.rect(screen, BLACK, (WINDOW_WIDTH - 110, 0, 130, 70))
         screen.blit(self.video_toggle, self.video_toggle_rect)
         screen.blit(self.music_toggle, self.music_toggle_rect)
-
-        font = pygame.font.Font('fonte/font.ttf', 44)
-        text = font.render(f'Jogo da Memória - Fase {self.level}', True, WHITE)
-        screen.blit(text, text.get_rect(midtop=(WINDOW_WIDTH // 2, 20)))
         self.tiles_group.draw(screen)
         self.tiles_group.update()
     
@@ -268,12 +221,12 @@ class Game:
         self.shape = self.img.shape[1::-1]
 
 pygame.init()
-        if self.level_complete:
+if self.level_complete:
             message = "Parabéns, você venceu!!! Aperte espaço para iniciar novamente" if self.level == 6 else "Fase concluída! Aperte espaço para a próxima fase"
             text = font.render(message, True, WHITE)
             screen.blit(text, text.get_rect(midbottom=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 40)))
 
-WINDOW_WIDTH = 1280
+            WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 860
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption('Jogo da memoria')
@@ -284,11 +237,11 @@ BLACK = (0, 0, 0)
 
 FPS = 60
 clock = pygame.time.Clock()
-        if hasattr(self, 'game_over') and self.game_over:
+if hasattr(self, 'game_over') and self.game_over:
             text = font.render("Eita, você perdeu :( Aperte espaço para iniciar novamente", True, WHITE)
             screen.blit(text, text.get_rect(midbottom=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 40)))
 
-game = Game()
+            game = Game()
 
 running = True
 while running:
@@ -303,4 +256,24 @@ while running:
     clock.tick(FPS)
 
 pygame.quit()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+           
+
 
