@@ -28,3 +28,35 @@ class Tile(pygame.sprite.Sprite):
     def esconder(self):
         self.shown = False
 
+        class Game():
+    def __init__(self):
+        self.level = 1
+        self.level_complete = False
+
+        self.all_figs = [f for f in os.listdir('imagens/figs') if os.path.join('imagens/figs', f)]
+
+        self.img_width, self.img_height = (128, 128)
+        self.padding = 20
+        self.margin_top = 160
+        self.cols = 4
+        self.rows = 2
+        self.width = 1280
+
+        self.tiles_group = pygame.sprite.Group()
+
+        self.flipped = []
+        self.frame_count = 0
+        self.block_game = False
+
+        self.generate_level(self.level)
+
+        
+
+
+
+
+        
+
+
+
+
