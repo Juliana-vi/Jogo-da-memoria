@@ -70,6 +70,46 @@ class Tile(pygame.sprite.Sprite):
         pygame.mixer.music.set_volume(.3)
         pygame.mixer.music.play()
 
+        def update(self, event_list):
+        if self.is_video_playing:
+            self.success, self.img = self.cap.read()
+
+        self.user_input(event_list)
+        self.draw()
+        self.check_level_complete(event_list)
+
+    def check_level_complete(self, event_list):
+        if not self.block_game:
+            for event in event_list:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    for tile in self.tiles_group:
+                        if tile.rect.collidepoint(event.pos):
+                            self.flipped.append(tile.name)
+                            tile.show()
+                            if len(self.flipped) == 2:
+                                if self.flipped[0] != self.flipped[1]:
+                                    self.block_game = True
+                                else:
+                                    self.flipped = []
+                                    for tile in self.tiles_group:
+                                        if tile.shown:
+                                            self.level_complete = True
+                                        else:
+                                            self.level_complete = False
+                                            break
+        else:
+            self.frame_count += 1
+            if self.frame_count == FPS:
+                self.frame_count = 0
+                self.block_game = False
+
+                for tile in self.tiles_group:
+                    if tile.name in self.flipped:
+                        tile.hide()
+                self.flipped = []
+                
+
+
 
 
 
