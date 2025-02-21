@@ -135,6 +135,34 @@ class Tile(pygame.sprite.Sprite):
         figs.extend(figs_copy)
         random.shuffle(figs)
         return figs
+    
+    def user_input(self, event_list):
+        for event in event_list:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if self.music_toggle_rect.collidepoint(pygame.mouse.get_pos()):
+                    if self.is_music_playing:
+                        self.is_music_playing = False
+                        self.music_toggle = self.sound_off
+                        pygame.mixer.music.pause()
+                    else:
+                        self.is_music_playing = True
+                        self.music_toggle = self.sound_on
+                        pygame.mixer.music.unpause()
+                if self.video_toggle_rect.collidepoint(pygame.mouse.get_pos()):
+                    if self.is_video_playing:
+                        self.is_video_playing = False
+                        self.video_toggle = self.stop
+                    else:
+                        self.is_video_playing = True
+                        self.video_toggle = self.play
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and self.level_complete:
+                    self.level += 1
+                    if self.level >= 6:
+                        self.level = 1
+                    self.generate_level(self.level)
+
 
 
 
