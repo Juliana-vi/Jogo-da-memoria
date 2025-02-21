@@ -50,7 +50,17 @@ class Tile(pygame.sprite.Sprite):
 
         self.generate_level(self.level)
 
+        # iniciando o vídeo
+        self.is_video_playing = True
+        self.play = pygame.image.load('imagens/play2.png').convert_alpha()
+        self.stop = pygame.image.load('imagens/pause2.png').convert_alpha()
+        self.video_toggle = self.play
+        self.video_toggle_rect = self.video_toggle.get_rect(topright=(WINDOW_WIDTH - 50, 10))
+        self.get_video()
         
+
+
+
 
 
 
