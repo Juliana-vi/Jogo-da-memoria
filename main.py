@@ -19,7 +19,7 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=(x, y))
         self.shown = False
 
-        def update(self):
+    def update(self):
         self.image = self.original_image if self.shown else self.back_image
 
     def mostrar(self):
@@ -28,7 +28,7 @@ class Tile(pygame.sprite.Sprite):
     def esconder(self):
         self.shown = False
 
-        class Game():
+class Game():
     def __init__(self):
         self.level = 1
         self.level_complete = False
@@ -70,7 +70,7 @@ class Tile(pygame.sprite.Sprite):
         pygame.mixer.music.set_volume(.3)
         pygame.mixer.music.play()
 
-        def update(self, event_list):
+    def update(self, event_list):
         if self.is_video_playing:
             self.success, self.img = self.cap.read()
 
@@ -225,7 +225,7 @@ class Tile(pygame.sprite.Sprite):
         if self.timer <= 0:
             self.game_over = True
 
-     def restart_game(self):
+    def restart_game(self):
         self.level = 1
         self.game_over = False
         self.timer = 60 
