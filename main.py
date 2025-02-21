@@ -8,7 +8,7 @@ class Tile(pygame.sprite.Sprite):
     def __init__(self, filename, x, y):
         super().__init__()
 
-        self.name = filename.split('.')[0]
+        self.nome = filename.split('.')[0]
 
         self.original_image = pygame.image.load('imagens/figs/'+ filename)
 
@@ -84,8 +84,8 @@ class Tile(pygame.sprite.Sprite):
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     for tile in self.tiles_group:
                         if tile.rect.collidepoint(event.pos):
-                            self.flipped.append(tile.name)
-                            tile.show()
+                            self.flipped.append(tile.nome)
+                            tile.mostrar()
                             if len(self.flipped) == 2:
                                 if self.flipped[0] != self.flipped[1]:
                                     self.block_game = True
@@ -104,10 +104,31 @@ class Tile(pygame.sprite.Sprite):
                 self.block_game = False
 
                 for tile in self.tiles_group:
-                    if tile.name in self.flipped:
-                        tile.hide()
+                    if tile.nome in self.flipped:
+                        tile.esconder()
                 self.flipped = []
-                
+
+    def generate_level(self, level):
+        self.figs = self.select_random_figs(self.level)
+        self.level_complete = False
+        self.rows = self.level + 1
+        self.cols = 4
+        self.generate_tileset(self.figs)
+
+    def generate_tileset(self, figs):
+        self.cols = self.rows = self.cols if self.cols >= self.rows else self.rows
+
+        TILES_WIDTH = (self.img_width * self.cols + self.padding * 3)
+        LEFT_MARING = RIGHT_MARGIN = (self.width - TILES_WIDTH) // 2
+        # tiles = []
+        self.tiles_group.empty()
+
+        for i in range(len(figs)):
+            x = LEFT_MARING + ((self.img_width + self.padding) * (i % self.cols))
+            y = self.margin_top + (i // self.rows * (self.img_height + self.padding))
+            tile = Tile(figs[i], x, y)
+            self.tiles_group.add(tile)
+
 
 
 
