@@ -79,7 +79,6 @@ class Game:
 
     def check_level_complete(self, event_list):
         if not self.block_game:
-
             if self.flipped[0] != self.flipped[1]:
                 self.block_game = True
             else:
@@ -88,12 +87,11 @@ class Game:
         else:
             self.frame_count += 1
             if self.frame_count == FPS:
-               self.frame_count = 0
-               self.block_game = False
-
-           for tile in self.tiles_group:
-                    if tile.nome in self.flipped:
-                        tile.esconder()
+                self.frame_count = 0
+                self.block_game = False
+            for tile in self.tiles_group:
+                if tile.nome in self.flipped:
+                    tile.esconder()
             self.flipped.clear()
            
     def generate_level(self, level):
@@ -138,7 +136,7 @@ class Game:
                         self.is_video_playing = True
                         self.video_toggle = self.play
 
-            if event.type == pygame.KEYDOWN:
+             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and self.level_complete:
                     self.level += 1
                     if self.level >= 6:
@@ -146,19 +144,19 @@ class Game:
                     self.generate_level(self.level)
 
         def draw(self):
-        screen.fill(BLACK)
+         screen.fill(BLACK)
 
         title_font = pygame.font.Font('fonte/font.ttf', 44)
         content_font = pygame.font.Font('fonte/font.ttf', 24)
 
-        title_text = title_font.render('Jogo da Memória', True, WHITE)
-        title_rect = title_text.get_rect(midtop=(WINDOW_WIDTH // 2, 10))
+        self.title_text = title_font.render('Jogo da Memória', True, WHITE)
+        self.title_rect = self.title_text.get_rect(midtop=(WINDOW_WIDTH // 2, 10))
 
-        level_text = content_font.render('Fase ' + str(self.level), True, WHITE)
-        level_rect = level_text.get_rect(midtop=(WINDOW_WIDTH // 2, 80))
+        self.level_text = content_font.render('Fase ' + str(self.level), True, WHITE)
+        self.level_rect = self.level_text.get_rect(midtop=(WINDOW_WIDTH // 2, 80))
 
-        info_text = content_font.render('Encontre as figurinhas semelhantes', True, BLACK)
-        info_rect = info_text.get_rect(midtop=(WINDOW_WIDTH // 2, 120))
+        self.info_text = content_font.render('Encontre as figurinhas semelhantes', True, BLACK)
+        self.info_rect = self.info_text.get_rect(midtop=(WINDOW_WIDTH // 2, 120))
 
         if self.is_video_playing:
             if self.success:
@@ -205,10 +203,9 @@ class Game:
     def start_level(self):
         self.timer = 60
 
-        screen.blit(title_text, title_rect)
-        screen.blit(level_text, level_rect)
-        screen.blit(info_text, info_rect)
-        screen.blit(timer_text, timer_rect)
+        screen.blit(self.title_text, self.title_rect)
+        screen.blit(self.level_text, self.level_rect)
+        screen.blit(self.info_text, self.info_rect)
         pygame.draw.rect(screen, BLACK, (WINDOW_WIDTH - 110, 0, 130, 70))
         screen.blit(self.video_toggle, self.video_toggle_rect)
         screen.blit(self.music_toggle, self.music_toggle_rect)
@@ -221,12 +218,13 @@ class Game:
         self.shape = self.img.shape[1::-1]
 
 pygame.init()
-if self.level_complete:
-            message = "Parabéns, você venceu!!! Aperte espaço para iniciar novamente" if self.level == 6 else "Fase concluída! Aperte espaço para a próxima fase"
-            text = font.render(message, True, WHITE)
-            screen.blit(text, text.get_rect(midbottom=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 40)))
+game = Game()
+if game.level_complete:
+    message = "Parabéns, você venceu!!! Aperte espaço para iniciar novamente" if game.level == 6 else "Fase concluída! Aperte espaço para a próxima fase"
+    text = game.font.render(message, True, WHITE)
+    screen.blit(text, text.get_rect(midbottom=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 40)))
 
-            WINDOW_WIDTH = 1280
+WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 860
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption('Jogo da memoria')
@@ -237,11 +235,9 @@ BLACK = (0, 0, 0)
 
 FPS = 60
 clock = pygame.time.Clock()
-if hasattr(self, 'game_over') and self.game_over:
-            text = font.render("Eita, você perdeu :( Aperte espaço para iniciar novamente", True, WHITE)
+if hasattr(game, 'game_over') and Game.game_over:
+            text = game.font.render("Eita, você perdeu :( Aperte espaço para iniciar novamente", True, WHITE)
             screen.blit(text, text.get_rect(midbottom=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 40)))
-
-            game = Game()
 
 running = True
 while running:
