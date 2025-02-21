@@ -166,8 +166,8 @@ class Tile(pygame.sprite.Sprite):
     def draw(self):
         screen.fill(BLACK)
 
-        title_font = pygame.font.Font('fonts/font.ttf', 44)
-        content_font = pygame.font.Font('fonts/font.ttf', 24)
+        title_font = pygame.font.Font('fonte/font.ttf', 44)
+        content_font = pygame.font.Font('fonte/font.ttf', 24)
 
         title_text = title_font.render('Jogo da Memória', True, WHITE)
         title_rect = title_text.get_rect(midtop=(WINDOW_WIDTH // 2, 10))
