@@ -51,7 +51,7 @@ class Game:
         self.timer = 60  # Contador regressivo
         self.last_tick = pygame.time.get_ticks()  # Marca o tempo inicial
 
-        self.generate_level(self.level)
+        self.generate_level()
 
         # Iniciando o vídeo
         self.is_video_playing = True
@@ -76,6 +76,18 @@ class Game:
         # Carregar fontes
         self.title_font = pygame.font.Font('fonte/font.ttf', 44)
         self.content_font = pygame.font.Font('fonte/font.ttf', 24)
+
+    def generate_level(self):
+        self.tiles_group.empty()
+        selected_figs = random.sample(self.all_figs, self.cols * self.rows // 2) * 2
+        random.shuffle(selected_figs)
+
+        for row in range(self.rows):
+            for col in range(self.cols):
+                x = col * (self.img_width + self.padding) + (WINDOW_WIDTH - (self.cols * (self.img_width + self.padding))) // 2
+                y = row * (self.img_height + self.padding) + self.margin_top
+                tile = Tile(selected_figs.pop(), x, y)
+                self.tiles_group.add(tile)
 
     def update(self, event_list):
         if self.is_video_playing:
