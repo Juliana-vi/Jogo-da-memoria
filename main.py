@@ -28,11 +28,20 @@ class Tile(pygame.sprite.Sprite):
     def hide(self):
         self.shown = False
 
+def format_time(seconds):
+    minutes = seconds // 60
+    seconds = seconds % 60
+    return f"{minutes:02}:{seconds:02}"
 
 class Game():
     def __init__(self):
         self.level = 1
         self.level_complete = False
+        self.time_left = 100  
+        self.last_time_update = pygame.time.get_ticks()
+        self.game_over = False
+        self.is_video_playing = True
+        self.img = None
 
         # figs
         self.all_figs = [f for f in os.listdir('imagens/figs') if os.path.join('imagens/figs', f)]
@@ -52,6 +61,35 @@ class Game():
 
         # gerar nivel 1
         self.generate_level(self.level)
+        self.play_video('video/intro.mp4')
+
+    def play_video(self, video_path):
+        cap = cv2.VideoCapture(video_path)
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            self.img = frame
+            frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
+            screen.blit(frame_surface, (0, 0))
+            pygame.display.update()
+            if pygame.event.get(pygame.QUIT):
+                cap.release()
+                pygame.quit()
+                exit()
+        cap.release()
+        self.is_video_playing = False
+
+    def update_timer(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_time_update >= 1000:
+            self.last_time_update = current_time
+            if self.time_left > 0:
+                self.time_left -= 1
+            else:
+                self.game_over = True
+                self.level_complete = False
 
         # iniciando o vídeo
         self.is_video_playing = True
@@ -114,6 +152,8 @@ class Game():
     def generate_level(self, level):
         self.figs = self.select_random_figs(self.level)
         self.level_complete = False
+        self.time_left = 100 
+        self.game_over = False 
         self.rows = self.level + 1
         self.cols = 4
         self.generate_tileset(self.figs)
@@ -159,12 +199,12 @@ class Game():
                         self.is_video_playing = True
                         self.video_toggle = self.play
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and self.level_complete:
-                    self.level += 1
-                    if self.level >= 6:
-                        self.level = 1
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                if self.level_complete or self.game_over:
+                    self.level = 1 if self.level >= 6 else self.level + 1
                     self.generate_level(self.level)
+                    self.play_video('video/next_level.mp4')
+
 
     def draw(self):
         screen.fill(BLACK)
@@ -182,6 +222,13 @@ class Game():
 
         info_text = content_font.render('Encontre os animais semelhantes', True, WHITE)
         info_rect = info_text.get_rect(midtop=(WINDOW_WIDTH // 2, 120))
+
+        timer_text = content_font.render(f'Tempo: {format_time(self.time_left)}', True, WHITE)
+        timer_rect = timer_text.get_rect(midtop=(WINDOW_WIDTH // 2, 120))
+        screen.blit(timer_text, timer_rect)
+
+        if self.img is not None:
+            screen.blit(pygame.image.frombuffer(self.img.tobytes(), self.img.shape[1::-1], "BGR"), (0, 120))
 
         if self.is_video_playing:
             if self.success:
@@ -208,7 +255,15 @@ class Game():
         self.tiles_group.update()
 
         if self.level_complete:
+            msg = 'Parabéns, você venceu! Aperte espaço para iniciar novamente' if self.level == 5 else 'Fase concluída. Aperte Espaço para próxima fase!'
+            next_text = content_font.render(msg, True, WHITE)
+            next_rect = next_text.get_rect(midbottom=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 40))
             screen.blit(next_text, next_rect)
+        
+        if self.game_over:
+            lose_text = content_font.render('Eita, você perdeu :( Aperte espaço para iniciar novamente', True, WHITE)
+            lose_rect = lose_text.get_rect(midbottom=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 40))
+            screen.blit(lose_text, lose_rect)
 
     def get_video(self):
         self.cap = cv2.VideoCapture('video/clouds.mp4')
