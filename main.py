@@ -41,7 +41,11 @@ class Game():
         self.last_time_update = pygame.time.get_ticks()
         self.game_over = False
         self.is_video_playing = True
-        self.img = None
+        self.cap = None
+    
+    def video_toggle(self):
+        self.is_video_playing = not self.is_video_playing
+
 
         # figs
         self.all_figs = [f for f in os.listdir('imagens/figs') if os.path.join('imagens/figs', f)]
@@ -58,27 +62,35 @@ class Game():
         self.flipped = []
         self.frame_count = 0
         self.block_game = False
+        self.img = pygame.Surface((1,1))
 
         # gerar nivel 1
         self.generate_level(self.level)
         self.play_video('video/intro.mp4')
 
     def play_video(self, video_path):
-        cap = cv2.VideoCapture(video_path)
-        while cap.isOpened():
-            ret, frame = cap.read()
+        if self.cap:
+            self.cap.release()
+
+        self.cap = cv2.VideoCapture(video_path)
+
+        while self.cap.isOpened():
+            ret, frame = self.cap.read()
             if not ret:
                 break
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            self.img = frame
-            frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
-            screen.blit(frame_surface, (0, 0))
+            frame = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
+            screen.blit(frame, (0, 0))
             pygame.display.update()
-            if pygame.event.get(pygame.QUIT):
-                cap.release()
+
+            for event in pygame.event.get():
+              if event.type == pygame.QUIT:
+                self.cap.release()
                 pygame.quit()
                 exit()
-        cap.release()
+
+        self.cap.release()
+        self.cap = None
         self.is_video_playing = False
 
     def update_timer(self):
@@ -227,16 +239,22 @@ class Game():
         timer_rect = timer_text.get_rect(midtop=(WINDOW_WIDTH // 2, 120))
         screen.blit(timer_text, timer_rect)
 
+        if self.img is not None and isinstance(self.img, pygame.Surface):
+            screen.blit(self.img, (0, 120))
+
+        self.tiles_group.draw(screen)
+        self.tiles_group.update()
+
         if self.img is not None:
-            screen.blit(pygame.image.frombuffer(self.img.tobytes(), self.img.shape[1::-1], "BGR"), (0, 120))
+            screen.blit(self.img, (0, 120)), (0, 120)
 
         if self.is_video_playing:
             if self.success:
-                screen.blit(pygame.image.frombuffer(self.img.tobytes(), self.shape, 'BGR'), (0, 120))
+                screen.blit(self.img, (0, 120)), (0, 120)
             else:
                 self.get_video()
         else:
-            screen.blit(pygame.image.frombuffer(self.img.tobytes(), self.shape, 'BGR'), (0, 120))
+            screen.blit(self.img, (0, 120)), (0, 120)
 
         if not self.level == 5:
             next_text = content_font.render('Fase concluída. Aperte Espaço para próxima fase!', True, WHITE)
