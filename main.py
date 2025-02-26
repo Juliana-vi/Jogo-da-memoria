@@ -180,7 +180,7 @@ class Game():
         level_text = content_font.render('Fase ' + str(self.level), True, WHITE)
         level_rect = level_text.get_rect(midtop=(WINDOW_WIDTH // 2, 80))
 
-        info_text = content_font.render('Encontre os animais semelhantes', True, WHITE)
+        info_text = content_font.render('Encontre as figurinhas semelhantes', True, WHITE)
         info_rect = info_text.get_rect(midtop=(WINDOW_WIDTH // 2, 120))
 
         if self.is_video_playing:
