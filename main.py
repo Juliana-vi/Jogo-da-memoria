@@ -87,8 +87,11 @@ def show_victory_screen():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     waiting = False
+                    return True  # Indica que o jogo deve ser reiniciado
 
         success, img = cap.read()
+
+    return False  # Indica que o jogo não deve ser reiniciado
 
 def show_defeat_screen():
     cap = cv2.VideoCapture('video/clouds.mp4')
@@ -267,14 +270,14 @@ class Game():
     def show_victory_message(self):
         self.level_complete = True
         self.block_game = True
-        show_victory_screen()
-        self.reset_game()
+        if show_victory_screen():
+            self.reset_game()
 
     def show_level_complete_message(self):
         self.level_complete = True
         self.block_game = True
         if self.level >= 5:
-            show_victory_screen()
+            self.show_victory_message()
         else:
             show_level_complete_screen()
             self.level += 1
