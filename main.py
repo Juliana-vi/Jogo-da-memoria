@@ -67,7 +67,7 @@ def show_victory_screen():
         title_text = title_font.render('Parabéns, você venceu!', True, WHITE)
         title_rect = title_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 200))
 
-        image = pygame.image.load('imagens/fig1-128x128.png')
+        image = pygame.image.load('imagens/figs/fig1-128x128.png')
         image = pygame.transform.scale(image, (256, 256))
         image_rect = image.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
 
@@ -273,9 +273,12 @@ class Game():
     def show_level_complete_message(self):
         self.level_complete = True
         self.block_game = True
-        show_level_complete_screen()
-        self.level += 1
-        self.generate_level(self.level)
+        if self.level >= 5:
+            show_victory_screen()
+        else:
+            show_level_complete_screen()
+            self.level += 1
+            self.generate_level(self.level)
 
     def reset_game(self):
         self.level = 1
