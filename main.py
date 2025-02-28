@@ -87,11 +87,11 @@ def show_victory_screen():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     waiting = False
-                    return True  # Indica que o jogo deve ser reiniciado
+                    return True
 
         success, img = cap.read()
 
-    return False  # Indica que o jogo não deve ser reiniciado
+    return False
 
 def show_defeat_screen():
     cap = cv2.VideoCapture('video/clouds.mp4')
